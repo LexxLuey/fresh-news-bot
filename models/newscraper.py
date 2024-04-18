@@ -50,7 +50,7 @@ class NewsSiteScraper:
         self.browser.wait_until_element_is_visible("css:div.select", timeout=30)
         dropdown_element = self.browser.find_element("css:select.select-input")
         select = Select(dropdown_element)
-        select.select_by_visible_text("Newest")
+        select.select_by_value("1")
         self.browser.wait_until_element_is_visible(
             "css:.checkbox-input-label", timeout=10
         )
