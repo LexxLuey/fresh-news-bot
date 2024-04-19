@@ -39,7 +39,8 @@ class NewsSiteScraper:
     @classmethod
     def open_news_site(self):
         options = ChromeOptions()
-        options.add_argument('--no-sandbox')
+        # options.add_argument('--no-sandbox')
+        options.add_argument('--headless')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--remote-debugging-pipe')
         self.browser.open_available_browser(self.url, browser_selection='chrome', options=options)
@@ -58,9 +59,12 @@ class NewsSiteScraper:
         )
 
 
-        self.browser.wait_until_element_is_visible(
-            "css:.checkbox-input-label", timeout=20
+        dropdown_element = WebDriverWait(self.browser.driver, 30).until(
+            EC.presence_of_element_located(("css selector", ".checkbox-input-label"))
         )
+        # self.browser.wait_until_element_is_visible(
+        #     "css:.checkbox-input-label", timeout=20
+        # )
 
         checkbox_labels = self.browser.find_elements("css:.checkbox-input-label")
 
