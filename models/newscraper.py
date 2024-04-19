@@ -43,7 +43,7 @@ class NewsSiteScraper:
         options.add_argument('--headless')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--remote-debugging-pipe')
-        self.browser.open_available_browser(self.url, browser_selection='chrome', options=options)
+        self.browser.open_available_browser(self.url, browser_selection='chrome',)
         logger.info("Opening site...")
 
     @classmethod
