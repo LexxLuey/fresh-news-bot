@@ -36,7 +36,7 @@ class NewsSiteScraper:
     @classmethod
     def open_news_site(self):
         self.browser.open_available_browser(
-            self.url, headless=True, browser_selection="firefox"
+            self.url, headless=True, browser_selection="Firefox,firefox"
         )
         logger.info("Opening site...")
 
