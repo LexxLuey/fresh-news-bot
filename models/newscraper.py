@@ -182,5 +182,6 @@ class NewsSiteScraper:
 
     @classmethod
     def save_excel(self):
-        self.excel.save_excel()
         logger.info("Saving...")
+        self.excel.save_excel()
+        logger.info("Saving Complete...")
