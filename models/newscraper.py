@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 class NewsSiteScraper:
 
-    browser = Selenium(auto_close=False)
+    browser = Selenium()
     url = "https://www.latimes.com/"
     excel = ExcelWriter
 
