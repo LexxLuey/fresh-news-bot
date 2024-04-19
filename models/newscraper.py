@@ -5,6 +5,9 @@ from RPA.Browser.Selenium import Selenium
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 from models.date_filter import DateFilter
 from models.excel import ExcelWriter
@@ -32,7 +35,9 @@ class NewsSiteScraper:
 
     @classmethod
     def open_news_site(self):
-        self.browser.open_available_browser(self.url)
+        self.browser.open_available_browser(
+            self.url, headless=True, browser_selection="firefox"
+        )
         logger.info("Opening site...")
 
     @classmethod
@@ -47,10 +52,14 @@ class NewsSiteScraper:
             "css:input[data-element='search-form-input']", search_phrase + Keys.ENTER
         )
 
+        dropdown_element = WebDriverWait(self.browser.driver, 30).until(
+            EC.presence_of_element_located(("css selector", "select.select-input"))
+        )
+
         self.browser.wait_until_element_is_visible("css:div.select", timeout=30)
         dropdown_element = self.browser.find_element("css:select.select-input")
         select = Select(dropdown_element)
-        select.select_by_value("1")
+        select.select_by_visible_text("Newest")
         self.browser.wait_until_element_is_visible(
             "css:.checkbox-input-label", timeout=10
         )
