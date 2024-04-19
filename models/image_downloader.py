@@ -15,8 +15,8 @@ class ImageDownloader:
     def download_news_picture(self, url, picture_name):
         logger.info("downloading image...")
         try:            
-            if not os.path.exists("output/pictures"):
-                os.makedirs("output/pictures")
+            if not os.path.exists("output"):
+                os.makedirs("output")
 
             response = requests.get(url)
 
@@ -26,7 +26,7 @@ class ImageDownloader:
                 file_extension = ".jpg"
 
             picture_filename = os.path.join(
-                "output/pictures", f"{picture_name}{file_extension}"
+                "output", f"{picture_name}{file_extension}"
             )
 
             with open(picture_filename, "wb") as file:
