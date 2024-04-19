@@ -20,12 +20,25 @@ def extract_data_from_news_site():
     item = workitems.inputs.current
 
     logger.info("Extract parameters from payload...")
-    search_phrase = item.payload.get("search_phrase", "")
-    category = item.payload.get("category", "")
-    months = item.payload.get("months", 1)
+    search_phrase :str = item.payload.get("search_phrase", "")
+    if not search_phrase or search_phrase.strip(" ") == "":
+        logger.warn(f"Dont be a cheeky bugger. Supply a search phrase in the work item. Bot shutting down")
+        return
+    category: str = item.payload.get("category", "")
+    if not category or category.strip(" ") == "":
+        logger.warn(f"Dont be a cheeky bugger. Supply a category in the work item. Bot shutting down")
+        return
+
+    months: int = item.payload.get("months", 1)
+    if not months or not isinstance(months, int):
+        logger.warn(f"Dont be a cheeky bugger. Supply a proper month eg 1 in the work item. Bot shutting down")
+        return
+    
+    if months == 0:
+        months = 1
 
     logger.info("Initializing news scrapper...")
-    news_scraper = NewsSiteScraper
+    news_scraper = NewsSiteScraper 
 
     news_scraper.open_news_site()
     news_scraper.enter_search_phrase(search_phrase=search_phrase, category=category)

@@ -1,12 +1,15 @@
 from datetime import datetime
 import re
 import logging
+import time
 from RPA.Browser.Selenium import Selenium
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ChromeOptions
+
 
 
 from models.date_filter import DateFilter
@@ -30,12 +33,16 @@ class NewsSiteScraper:
     excel = ExcelWriter
 
     def __init__(self):
-        logger.info("Initializing NewsSiteScraper...")
+        logger.info("Initializing NewsSiteScraper instance...")
         # ...
 
     @classmethod
     def open_news_site(self):
-        self.browser.open_available_browser(self.url, headless=True, download=True, browser_selection='firefox,opera,edge,safari,chrome')
+        options = ChromeOptions()
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--remote-debugging-pipe')
+        self.browser.open_available_browser(self.url, browser_selection='chrome', options=options)
         logger.info("Opening site...")
 
     @classmethod
@@ -50,16 +57,9 @@ class NewsSiteScraper:
             "css:input[data-element='search-form-input']", search_phrase + Keys.ENTER
         )
 
-        dropdown_element = WebDriverWait(self.browser.driver, 30).until(
-            EC.presence_of_element_located(("css selector", "select.select-input"))
-        )
 
-        self.browser.wait_until_element_is_visible("css:div.select", timeout=30)
-        dropdown_element = self.browser.find_element("css:select.select-input")
-        select = Select(dropdown_element)
-        select.select_by_visible_text("Newest")
         self.browser.wait_until_element_is_visible(
-            "css:.checkbox-input-label", timeout=10
+            "css:.checkbox-input-label", timeout=20
         )
 
         checkbox_labels = self.browser.find_elements("css:.checkbox-input-label")
@@ -67,16 +67,31 @@ class NewsSiteScraper:
         for label in checkbox_labels:
             span_element = label.find_element(By.CSS_SELECTOR, "span")
             span_text = span_element.text.lower()
+            logger.info(f"Checking {span_text} Category ...")
 
             if category.lower() in span_text:
                 checkbox_input = label.find_element(
                     By.CSS_SELECTOR, "input[type='checkbox']"
                 )
                 checkbox_input.click()
+                logger.info("Category clicked...")
                 break
+        
+        dropdown_element = WebDriverWait(self.browser.driver, 30).until(
+            EC.presence_of_element_located(("css selector", "select.select-input"))
+        )
+
+        # self.browser.wait_until_element_is_visible("css:div.select", timeout=30)
+        dropdown_element = self.browser.find_element("css:select.select-input")
+        select = Select(dropdown_element)
+        select.select_by_visible_text("Newest")
+        select.select_by_visible_text("Newest")
+        select.select_by_visible_text("Newest")
+        logger.info("Newest news selected... lets go")
 
     @classmethod
     def filter_search_result(self, months: int = 1, search_phrase: str = ""):
+        time.sleep(10)
         logger.info("Processing search results...")
         date_filter = DateFilter
         start_date = date_filter.date_calcs(months)
@@ -167,5 +182,6 @@ class NewsSiteScraper:
 
     @classmethod
     def save_excel(self):
-        self.excel.save_excel()
         logger.info("Saving...")
+        self.excel.save_excel()
+        logger.info("Saving Complete...")
